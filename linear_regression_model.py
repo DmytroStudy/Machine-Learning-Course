@@ -1,4 +1,4 @@
-import numpy as np
+import vectorization as np
 import matplotlib.pyplot as plt
 
 x_train = np.array([1.0, 2.0]) # input variable (size in 1000 square feet)

@@ -1,4 +1,4 @@
-import numpy as np
+import vectorization as np
 import matplotlib.pyplot as plt
 from utils.lab_utils_uni import plt_intuition, plt_stationary, plt_update_onclick, soup_bowl
 plt.style.use('./utils/deeplearning.mplstyle')

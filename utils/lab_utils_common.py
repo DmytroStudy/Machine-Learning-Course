@@ -3,7 +3,7 @@ lab_utils_common.py
     functions common to all optional labs, Course 1, Week 2 
 """
 
-import numpy as np
+import vectorization as np
 import matplotlib.pyplot as plt
 import os
 
