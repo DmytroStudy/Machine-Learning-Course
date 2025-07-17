@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 plt.style.use('./utils/deeplearning.mplstyle')
 np.set_printoptions(precision=2)  # reduced display precision on numpy arrays
 
-
-def predict(x, w, b): # single predict using linear regression
+# Single predict using linear regression
+def predict(x, w, b):
     p = np.dot(x, w) + b
     return p
 
-def compute_cost(X, y, w, b): # cost function for data set
+
+# Cost function for data set
+def compute_cost(X, y, w, b):
     m = X.shape[0]
     cost = 0.0
 
@@ -19,7 +21,9 @@ def compute_cost(X, y, w, b): # cost function for data set
     cost = cost / (2 * m)
     return cost
 
-def compute_gradient(X, y, w, b): # Computes single gradient for linear regression
+
+# Computes single gradient for linear regression
+def compute_gradient(X, y, w, b):
     m, n = X.shape
     w_new = np.zeros((n,)) # initialize weights
     b_new = 0.
@@ -36,7 +40,7 @@ def compute_gradient(X, y, w, b): # Computes single gradient for linear regressi
 
     return w_new, b_new
 
-# batch gradient descent to learn w and b
+# Batch gradient descent to learn w and b
 def gradient_descent(X, y, w_in, b_in, cost_function, gradient_function, alpha, num_iters):
     # An array to store cost J and w's at each iteration primarily for graphing later
     J_history = []
@@ -92,7 +96,7 @@ m,_ = X_train.shape
 for i in range(m):
     print(f"prediction: {np.dot(X_train[i], w_final) + b_final:0.2f}, target value: {y_train[i]}")
 
-# plot cost versus iteration
+# Plot cost versus iteration
 fig, (ax1, ax2) = plt.subplots(1, 2, constrained_layout=True, figsize=(12, 4))
 ax1.plot(J_hist)
 ax2.plot(100 + np.arange(len(J_hist[100:])), J_hist[100:])
