@@ -2,7 +2,7 @@ import math, copy
 import vectorization as np
 import matplotlib.pyplot as plt
 from utils.lab_utils_uni import plt_house_x, plt_contour_wgrad, plt_divergence, plt_gradients
-plt.style.use('./utils/deeplearning.mplstyle')
+plt.style.use('../utils/deeplearning.mplstyle')
 
 def cost_function(x, y, w, b):
     m = x.shape[0] # length of 1st array column

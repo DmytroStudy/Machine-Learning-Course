@@ -2,7 +2,7 @@
 lab_utils_uni.py
     routines used in Course 1, Week2, labs1-3 dealing with single variables (univariate)
 """
-import vectorization as np
+from supervised_learning import vectorization as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from matplotlib.gridspec import GridSpec

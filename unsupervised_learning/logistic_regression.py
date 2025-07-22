@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils.plt_one_addpt_onclick import plt_one_addpt_onclick
 from utils.lab_utils_common import draw_vthresh
-plt.style.use('./utils/deeplearning.mplstyle')
+plt.style.use('../utils/deeplearning.mplstyle')
 np.set_printoptions(precision=2)
 
 

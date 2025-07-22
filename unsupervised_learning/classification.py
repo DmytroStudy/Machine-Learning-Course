@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils.lab_utils_common import dlc, plot_data
 from utils.plt_one_addpt_onclick import plt_one_addpt_onclick
-plt.style.use('./utils/deeplearning.mplstyle')
+plt.style.use('../utils/deeplearning.mplstyle')
 
 
 # Loading data sets
