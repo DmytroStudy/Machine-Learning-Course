@@ -48,9 +48,7 @@ def gradient_descent(x, y, w, b, a, num_iters, cost_function, gradient_function)
             p_history.append([w, b])
         # Print cost
         if i % math.ceil(num_iters / 10) == 0:
-            print(f"Iteration {i:4}: Cost {J_history[-1]:0.2e} ",
-                  f"dj_dw: {tmp_w: 0.3e}, dj_db: {tmp_b: 0.3e}  ",
-                  f"w: {w: 0.3e}, b:{b: 0.5e}")
+            print(f"Iteration {i:4}: Cost {J_history[-1]:0.2e}")
 
     return w, b, J_history, p_history  # return w, b and J history for graphing
 
