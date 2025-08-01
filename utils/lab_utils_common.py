@@ -1,26 +1,131 @@
+""" 
+lab_utils_common.py
+    functions common to all optional labs, Course 1, Week 2 
 """
-lab_utils_common
-   contains common routines and variable definitions
-   used by all the labs in this week.
-   by contrast, specific, large plotting routines will be in separate files
-   and are generally imported into the week where they are used.
-   those files will import this file
-"""
+
+import os
 import copy
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from ipywidgets import Output
-import os
-
-np.set_printoptions(precision=2)
-
-dlc = dict(dlblue = '#0096ff', dlorange = '#FF9300', dldarkred='#C00000', dlmagenta='#FF40FF', dlpurple='#7030A0')
-dlblue = '#0096ff'; dlorange = '#FF9300'; dldarkred='#C00000'; dlmagenta='#FF40FF'; dlpurple='#7030A0'
-dlcolors = [dlblue, dlorange, dldarkred, dlmagenta, dlpurple]
 style_path = os.path.join(os.path.dirname(__file__), 'deeplearning.mplstyle')
 plt.style.use(style_path)
+
+dlblue = '#0096ff'; dlorange = '#FF9300'; dldarkred='#C00000'; dlmagenta='#FF40FF'; dlpurple='#7030A0';
+dlcolors = [dlblue, dlorange, dldarkred, dlmagenta, dlpurple]
+dlc = dict(dlblue = '#0096ff', dlorange = '#FF9300', dldarkred='#C00000', dlmagenta='#FF40FF', dlpurple='#7030A0')
+
+
+##########################################################
+# Regression Routines
+##########################################################
+
+#Function to calculate the cost
+def compute_cost_matrix(X, y, w, b, logistic=False, lambda_=0, safe=True):
+    """
+    Computes the cost using  using matrices
+    Args:
+      X : (ndarray, Shape (m,n))          matrix of examples
+      y : (ndarray  Shape (m,) or (m,1))  target value of each example
+      w : (ndarray  Shape (n,) or (n,1))  Values of parameter(s) of the model
+      b : (scalar )                       Values of parameter of the model
+      verbose : (Boolean) If true, print out intermediate value f_wb
+    Returns:
+      total_cost: (scalar)                cost
+    """
+    m = X.shape[0]
+    y = y.reshape(-1,1)             # ensure 2D
+    w = w.reshape(-1,1)             # ensure 2D
+    if logistic:
+        if safe:  #safe from overflow
+            z = X @ w + b                                                           #(m,n)(n,1)=(m,1)
+            cost = -(y * z) + log_1pexp(z)
+            cost = np.sum(cost)/m                                                   # (scalar)
+        else:
+            f    = sigmoid(X @ w + b)                                               # (m,n)(n,1) = (m,1)
+            cost = (1/m)*(np.dot(-y.T, np.log(f)) - np.dot((1-y).T, np.log(1-f)))   # (1,m)(m,1) = (1,1)
+            cost = cost[0,0]                                                        # scalar
+    else:
+        f    = X @ w + b                                                        # (m,n)(n,1) = (m,1)
+        cost = (1/(2*m)) * np.sum((f - y)**2)                                   # scalar
+
+    reg_cost = (lambda_/(2*m)) * np.sum(w**2)                                   # scalar
+
+    total_cost = cost + reg_cost                                                # scalar
+
+    return total_cost                                                           # scalar
+
+
+def compute_gradient_matrix(X, y, w, b):
+    """
+    Computes the gradient for linear regression
+
+    Args:
+      X (ndarray (m,n)): Data, m examples with n features
+      y (ndarray (m,)) : target values
+      w (ndarray (n,)) : model parameters  
+      b (scalar)       : model parameter
+    Returns
+      dj_dw (ndarray (n,1)): The gradient of the cost w.r.t. the parameters w.
+      dj_db (scalar):        The gradient of the cost w.r.t. the parameter b.
+
+    """
+    m,n = X.shape
+    f_wb = X @ w + b
+    e   = f_wb - y
+    dj_dw  = (1/m) * (X.T @ e)
+    dj_db  = (1/m) * np.sum(e)
+
+    return dj_db,dj_dw
+
+
+# Loop version of multi-variable compute_cost
+def compute_cost(X, y, w, b):
+    """
+    compute cost
+    Args:
+      X (ndarray (m,n)): Data, m examples with n features
+      y (ndarray (m,)) : target values
+      w (ndarray (n,)) : model parameters  
+      b (scalar)       : model parameter
+    Returns
+      cost (scalar)    : cost
+    """
+    m = X.shape[0]
+    cost = 0.0
+    for i in range(m):
+        f_wb_i = np.dot(X[i],w) + b           #(n,)(n,)=scalar
+        cost = cost + (f_wb_i - y[i])**2
+    cost = cost/(2*m)
+    return cost 
+
+def compute_gradient(X, y, w, b):
+    """
+    Computes the gradient for linear regression
+    Args:
+      X (ndarray (m,n)): Data, m examples with n features
+      y (ndarray (m,)) : target values
+      w (ndarray (n,)) : model parameters  
+      b (scalar)       : model parameter
+    Returns
+      dj_dw (ndarray Shape (n,)): The gradient of the cost w.r.t. the parameters w.
+      dj_db (scalar):             The gradient of the cost w.r.t. the parameter b.
+    """
+    m,n = X.shape           #(number of examples, number of features)
+    dj_dw = np.zeros((n,))
+    dj_db = 0.
+
+    for i in range(m):
+        err = (np.dot(X[i], w) + b) - y[i]
+        for j in range(n):
+            dj_dw[j] = dj_dw[j] + err * X[i,j]
+        dj_db = dj_db + err
+    dj_dw = dj_dw/m
+    dj_db = dj_db/m
+
+    return dj_db,dj_dw
 
 def sigmoid(z):
     """
@@ -102,70 +207,7 @@ def log_1pexp(x, maximum=20):
 
     out[i]  = np.log(1 + np.exp(x[i]))
     out[ni] = x[ni]
-    return out
-
-
-def compute_cost_matrix(X, y, w, b, logistic=False, lambda_=0, safe=True):
-    """
-    Computes the cost using  using matrices
-    Args:
-      X : (ndarray, Shape (m,n))          matrix of examples
-      y : (ndarray  Shape (m,) or (m,1))  target value of each example
-      w : (ndarray  Shape (n,) or (n,1))  Values of parameter(s) of the model
-      b : (scalar )                       Values of parameter of the model
-      verbose : (Boolean) If true, print out intermediate value f_wb
-    Returns:
-      total_cost: (scalar)                cost
-    """
-    m = X.shape[0]
-    y = y.reshape(-1,1)             # ensure 2D
-    w = w.reshape(-1,1)             # ensure 2D
-    if logistic:
-        if safe:  #safe from overflow
-            z = X @ w + b                                                           #(m,n)(n,1)=(m,1)
-            cost = -(y * z) + log_1pexp(z)
-            cost = np.sum(cost)/m                                                   # (scalar)
-        else:
-            f    = sigmoid(X @ w + b)                                               # (m,n)(n,1) = (m,1)
-            cost = (1/m)*(np.dot(-y.T, np.log(f)) - np.dot((1-y).T, np.log(1-f)))   # (1,m)(m,1) = (1,1)
-            cost = cost[0,0]                                                        # scalar
-    else:
-        f    = X @ w + b                                                        # (m,n)(n,1) = (m,1)
-        cost = (1/(2*m)) * np.sum((f - y)**2)                                   # scalar
-
-    reg_cost = (lambda_/(2*m)) * np.sum(w**2)                                   # scalar
-
-    total_cost = cost + reg_cost                                                # scalar
-
-    return total_cost                                                           # scalar
-
-def compute_gradient_matrix(X, y, w, b, logistic=False, lambda_=0):
-    """
-    Computes the gradient using matrices
-
-    Args:
-      X : (ndarray, Shape (m,n))          matrix of examples
-      y : (ndarray  Shape (m,) or (m,1))  target value of each example
-      w : (ndarray  Shape (n,) or (n,1))  Values of parameters of the model
-      b : (scalar )                       Values of parameter of the model
-      logistic: (boolean)                 linear if false, logistic if true
-      lambda_:  (float)                   applies regularization if non-zero
-    Returns
-      dj_dw: (array_like Shape (n,1))     The gradient of the cost w.r.t. the parameters w
-      dj_db: (scalar)                     The gradient of the cost w.r.t. the parameter b
-    """
-    m = X.shape[0]
-    y = y.reshape(-1,1)             # ensure 2D
-    w = w.reshape(-1,1)             # ensure 2D
-
-    f_wb  = sigmoid( X @ w + b ) if logistic else  X @ w + b      # (m,n)(n,1) = (m,1)
-    err   = f_wb - y                                              # (m,1)
-    dj_dw = (1/m) * (X.T @ err)                                   # (n,m)(m,1) = (n,1)
-    dj_db = (1/m) * np.sum(err)                                   # scalar
-
-    dj_dw += (lambda_/m) * w        # regularize                  # (n,1)
-
-    return dj_db, dj_dw                                           # scalar, (n,1)
+    return out                                                          # scalar                                        # scalar, (n,1)
 
 def gradient_descent(X, y, w_in, b_in, alpha, num_iters, logistic=False, lambda_=0, verbose=True):
     """
@@ -296,3 +338,4 @@ def draw_vthresh(ax,x):
         arrowstyle='simple, head_width=5, head_length=10, tail_width=0.0',
     )
     ax.add_artist(f)
+

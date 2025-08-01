@@ -3,8 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from utils.lab_utils_common import  dlc, plot_data, plt_tumor_data, sigmoid, compute_cost_logistic
 from utils.plt_quad_logistic import plt_quad_logistic, plt_prob
-from unsupervised_learning.cost_function import logistic_cost
-plt.style.use('../utils/deeplearning.mplstyle')
+from Course1_SupervisedMachineLearning.logistic_regression.cost_function import logistic_cost
+plt.style.use('../../utils/deeplearning.mplstyle')
 
 # Compute one gradient descent step
 def compute_gradient(x_train, y_train, w_train, b, alpha):

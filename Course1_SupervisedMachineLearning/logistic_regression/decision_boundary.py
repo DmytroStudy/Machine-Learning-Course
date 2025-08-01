@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from utils.lab_utils_common import plot_data, sigmoid, draw_vthresh
-plt.style.use('../utils/deeplearning.mplstyle')
+plt.style.use('../../utils/deeplearning.mplstyle')
 
 
 

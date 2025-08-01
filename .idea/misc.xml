@@ -3,4 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.13 (Machine-Learning-Course)" />
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (MachineLearningCourse)" project-jdk-type="Python SDK" />
 </project>

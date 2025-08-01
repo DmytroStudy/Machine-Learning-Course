@@ -2,7 +2,7 @@
 lab_utils_uni.py
     routines used in Course 1, Week2, labs1-3 dealing with single variables (univariate)
 """
-from supervised_learning import vectorization as np
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from matplotlib.gridspec import GridSpec
@@ -10,7 +10,6 @@ from matplotlib.colors import LinearSegmentedColormap
 from ipywidgets import interact
 from utils.lab_utils_common import compute_cost
 from utils.lab_utils_common import dlblue, dlorange, dldarkred, dlmagenta, dlpurple, dlcolors
-
 import os
 style_path = os.path.join(os.path.dirname(__file__), 'deeplearning.mplstyle')
 plt.style.use(style_path)

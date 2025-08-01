@@ -1,7 +1,7 @@
-import vectorization as np
+import numpy as np
 import matplotlib.pyplot as plt
 from utils.lab_utils_uni import plt_intuition, plt_stationary, plt_update_onclick, soup_bowl
-plt.style.use('../utils/deeplearning.mplstyle')
+plt.style.use('../../utils/deeplearning.mplstyle')
 
 
 def compute_cost(x, y, w, b): # computes the cost function for linear regression

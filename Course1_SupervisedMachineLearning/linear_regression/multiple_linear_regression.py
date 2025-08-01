@@ -1,7 +1,7 @@
 import copy, math
 import numpy as np
 import matplotlib.pyplot as plt
-plt.style.use('../utils/deeplearning.mplstyle')
+plt.style.use('../../utils/deeplearning.mplstyle')
 np.set_printoptions(precision=2)  # reduced display precision on numpy arrays
 
 # Single predict using linear regression

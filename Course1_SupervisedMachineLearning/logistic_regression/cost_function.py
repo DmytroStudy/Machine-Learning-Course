@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from utils.lab_utils_common import  plot_data, sigmoid, dlc
-plt.style.use('../utils/deeplearning.mplstyle')
+plt.style.use('../../utils/deeplearning.mplstyle')
 
 
 def logistic_cost(x_train, y_train, w, b):

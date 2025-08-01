@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from utils.lab_utils_multi import  load_house_data
 from utils.lab_utils_common import dlc
 np.set_printoptions(precision=2)
-plt.style.use('../utils/deeplearning.mplstyle')
+plt.style.use('../../utils/deeplearning.mplstyle')
 
 
 
