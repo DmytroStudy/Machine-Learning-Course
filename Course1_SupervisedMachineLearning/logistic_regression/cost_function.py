@@ -30,7 +30,6 @@ def simplified_cost(x_train, y_train, w, b):
     return cost / m
 
 
-
 def simple_logistic_cost(x_train, y_train, w, b):
     m = y_train.shape[0]
     cost = 0
