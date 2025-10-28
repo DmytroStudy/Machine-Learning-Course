@@ -1,70 +1,94 @@
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from utils import *
 
-def entropy(p):
-    if p <= 0 or p >= 1:
-        return 0
-    return -p * np.log2(p) - (1-p)*np.log2(1-p)
+
+def compute_entropy(y):
+    entropy = 0.
+    if len(y) < 1: return entropy
+
+    p1 = sum(y) / len(y)
+    p2 = 1 - p1
+
+    if p1 > 0 and p2 > 0: entropy = (-p1 * np.log2(p1)) - (p2 * np.log2(p2))
+    return entropy
 
 
-def split_indexes(X, index_feature):
-    left_indexes, right_indexes = [], []\
+def split_dataset(X, node_indices, feature):
+    left_indices = []
+    right_indices = []
 
-    for i, x in enumerate(X):
-        if x[index_feature] == 1:left_indexes.append(i)
-        else:right_indexes.append(i)
+    for i in node_indices:
+        if X[i][feature] == 1: left_indices.append(i)
+        else: right_indices.append(i)
 
-    return left_indexes, right_indexes
-
-def weighted_entropy(X, y, left_indexes, right_indexes):
-    w_left = len(left_indexes)/len(X)
-    w_right = len(right_indexes)/len(X)
-
-    p_left = sum(y[left_indexes])/len(left_indexes)
-    p_right = sum(y[right_indexes])/len(right_indexes)
-
-    w_entropy = w_left * entropy(p_left) + w_right * entropy(p_right)
-    return w_entropy
-
-def information_gain(X, y, left_indexes, right_indexes):
-    p_node = sum(y)/len(y)
-    h_node = entropy(p_node)
-    w_entropy = weighted_entropy(X, y, left_indexes, right_indexes)
-    return h_node - w_entropy
-
-def split_tree(X, y):
-    inf_gain = 0
-
-    for i in range(len(X[0])):
-        left_indexes, right_indexes = split_indexes(X, i)
-        gain = information_gain(X, y, left_indexes, right_indexes)
-        print(gain)
-        if gain > inf_gain: inf_gain = gain; left_node, right_node = left_indexes, right_indexes
-
-    return left_node, right_node
+    return left_indices, right_indices
 
 
-# Ear Shape (1 - pointy, 0 - otherwise)
-# Face Shape (1 - round, 0 - otherwise)
-# Whiskers (1 - present, 0 - otherwise)
+def compute_information_gain(X, y, node_indices, feature):
+    # Split dataset
+    left_indices, right_indices = split_dataset(X, node_indices, feature)
 
-X_train = np.array([[1, 1, 1],
-[0, 0, 1],
-[0, 1, 0],
-[1, 0, 1],
-[1, 1, 1],
-[1, 1, 0],
-[0, 0, 0],
-[1, 1, 0],
-[0, 1, 0],
-[0, 1, 0]])
+    # Some useful variables
+    X_node, y_node = X[node_indices], y[node_indices]
+    X_left, y_left = X[left_indices], y[left_indices]
+    X_right, y_right = X[right_indices], y[right_indices]
 
-# Cat (1 - yes, 0 - no)
-y_train = np.array([1, 1, 0, 0, 1, 1, 0, 1, 0, 0])
+    if len(y_left) == 0 or len(y_right) == 0 or len(y_node) == 0: return 0
 
-print(f"{i, x}" for i, x in enumerate(X_train[0]))
+    w_left = len(y_left) / len(y_node)
+    w_right = len(y_right) / len(y_node)
 
-left_node, right_node = split_tree(X_train, y_train)
-print(f"{left_node, right_node}")
+    node_entropy = compute_entropy(y_node)
+    left_entropy = compute_entropy(y_left)
+    right_entropy = compute_entropy(y_right)
+
+    information_gain = node_entropy - (w_left * left_entropy + w_right * right_entropy)
+    return information_gain
+
+
+def get_best_split(X, y, node_indices):
+    num_features = X.shape[1]
+
+    best_feature = -1
+    best_gain = 0
+
+    for i in range(num_features):
+        gain = compute_information_gain(X, y, node_indices, i)
+        if gain > best_gain: best_gain = gain; best_feature = i
+
+    return best_feature
+
+
+TREE = []
+def build_tree_recursive(X, y, node_indices, branch_name, max_depth, current_depth):
+    # Maximum depth reached - stop splitting
+    if current_depth == max_depth:
+        formatting = " " * current_depth + "-" * current_depth
+        print(formatting, "%s leaf node with indices" % branch_name, node_indices)
+        return
+
+    # Otherwise, get best split and split the data
+    # Get the best feature and threshold at this node
+    best_feature = get_best_split(X, y, node_indices)
+
+    formatting = "-" * current_depth
+    print("%s Depth %d, %s: Split on feature: %d" % (formatting, current_depth, branch_name, best_feature))
+
+    # Split the dataset at the best feature
+    left_indices, right_indices = split_dataset(X, node_indices, best_feature)
+    TREE.append((left_indices, right_indices, best_feature))
+
+    # continue splitting the left and the right child. Increment current depth
+    build_tree_recursive(X, y, left_indices, "left", max_depth, current_depth + 1)
+    build_tree_recursive(X, y, right_indices, "right", max_depth, current_depth + 1)
+
+# Mushrooms dataset (brown cap, tapering stalk shape, solitary), (edible)
+X_train = np.array([[1,1,1],[1,0,1],[1,0,0],[1,0,0],[1,1,1],[0,1,1],[0,0,0],[1,0,1],[0,1,0],[1,0,0]])
+y_train = np.array([1,1,0,0,1,0,0,1,1,0])
+
+build_tree_recursive(X_train, y_train, range(10), "Root", max_depth=2, current_depth=0)
+
+
+
+
